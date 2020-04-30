@@ -9,6 +9,7 @@ const mqpacker = require('@lipemat/css-mqpacker');
 const notify = require('gulp-notify');
 const newer = require('gulp-newer');
 const cleanCSS = require('gulp-clean-css');
+const ngrok = require('ngrok');
 
 gulp.task('browser-sync', function () {
     browserSync.init({
@@ -18,6 +19,15 @@ gulp.task('browser-sync', function () {
             directory: true
         },
         port: 3000
+    }, async function (err, bs) {
+        const tunnel = await ngrok.connect({
+            port: bs.options.get('port'),
+            region: 'eu'
+        });
+        console.log(' ------------------------------------------------');
+        console.log(`  ngrok control panel: http://localhost:4040`);
+        console.log(`public URL running at: ${tunnel}`);
+        console.log(' ------------------------------------------------');
     });
     gulp.watch('./scss/**/*.scss', gulp.series('sass'));
     gulp.watch('./**/*.{html,css,js,php}').on('change', browserSync.reload);
